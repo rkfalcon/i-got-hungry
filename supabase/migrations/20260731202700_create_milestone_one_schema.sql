@@ -1,4 +1,5 @@
 create extension if not exists pgcrypto;
+create extension if not exists pg_trgm;
 
 create table public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -48,7 +49,7 @@ create table public.refresh_requests (
   completed_at timestamptz
 );
 
-create index restaurants_area_idx on public.restaurants (lower(area));
+create index restaurants_area_idx on public.restaurants using gin (lower(area) gin_trgm_ops);
 create index recommendation_evidence_restaurant_published_idx on public.recommendation_evidence (restaurant_id, published_at desc);
 create index saved_searches_user_id_idx on public.saved_searches (user_id);
 create index refresh_requests_status_requested_idx on public.refresh_requests (status, requested_at);

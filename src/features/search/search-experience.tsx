@@ -5,9 +5,10 @@ import type { RankedRestaurant, SearchResponse } from "./types";
 import { AuthPanel } from "@/features/auth/auth-panel";
 
 const cuisineOptions = ["Italian", "Pizza", "Thai", "Southern", "Mexican", "Japanese"];
+const shortDateFormatter = new Intl.DateTimeFormat("en", { month: "short", day: "numeric" });
 
 function RestaurantCard({ restaurant }: { restaurant: RankedRestaurant }) {
-  const freshness = new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(restaurant.latestEvidenceAt));
+  const freshness = shortDateFormatter.format(new Date(restaurant.latestEvidenceAt));
   return (
     <article className="restaurant-card">
       <div><p className="eyebrow">{restaurant.distanceKm.toFixed(1)} km away</p><h2>{restaurant.name}</h2></div>
@@ -28,6 +29,7 @@ export function SearchExperience() {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [showAuth, setShowAuth] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const selectedCuisines = [...cuisines, typedCuisine.trim().toLowerCase()].filter(Boolean);
 
   const useLocation = () => {
     if (!navigator.geolocation) return setLocationMessage("Location is unavailable. Enter a city or neighborhood instead.");
@@ -42,16 +44,14 @@ export function SearchExperience() {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setStatus("loading");
-    const selected = [...cuisines, typedCuisine.trim().toLowerCase()].filter(Boolean);
-    const result = await fetch("/api/search", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ area, ...coordinates, cuisines: selected }) });
+    const result = await fetch("/api/search", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ area, ...coordinates, cuisines: selectedCuisines }) });
     if (!result.ok) { setStatus("error"); return; }
     setResponse(await result.json());
     setStatus("idle");
   };
 
   const save = async () => {
-    const selected = [...cuisines, typedCuisine.trim().toLowerCase()].filter(Boolean);
-    const result = await fetch("/api/saved-searches", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ area, cuisines: selected }) });
+    const result = await fetch("/api/saved-searches", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ area, cuisines: selectedCuisines }) });
     if (result.status === 401 || result.status === 503) { setShowAuth(true); return; }
     setSaveMessage(result.ok ? "Search saved." : "We couldn't save this search.");
   };

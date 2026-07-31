@@ -1,9 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { RecommendationRepository } from "./repository";
 import type { Restaurant, SearchQuery } from "./types";
+import type { Database } from "@/lib/supabase/database.types";
 
-type RestaurantRow = { id: string; name: string; area: string; latitude: number | null; longitude: number | null; cuisines: string[] };
-type EvidenceRow = { restaurant_id: string; source_url: string; published_at: string; source_profile: string | null };
+type RestaurantRow = Database["public"]["Tables"]["restaurants"]["Row"];
+type EvidenceRow = Database["public"]["Tables"]["recommendation_evidence"]["Row"];
 
 function distanceKm(query: SearchQuery, row: RestaurantRow) {
   if (!query.coordinates || row.latitude == null || row.longitude == null) return 0;
@@ -15,12 +16,12 @@ function distanceKm(query: SearchQuery, row: RestaurantRow) {
 }
 
 export class SupabaseRecommendationRepository implements RecommendationRepository {
-  constructor(private readonly client: SupabaseClient) {}
+  constructor(private readonly client: SupabaseClient<Database>) {}
 
   static fromEnvironment() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const secret = process.env.SUPABASE_SECRET_KEY;
-    return url && secret ? new SupabaseRecommendationRepository(createClient(url, secret, { auth: { persistSession: false } })) : null;
+    return url && secret ? new SupabaseRecommendationRepository(createClient<Database>(url, secret, { auth: { persistSession: false } })) : null;
   }
 
   async listCached(query: SearchQuery): Promise<Restaurant[]> {
@@ -31,9 +32,17 @@ export class SupabaseRecommendationRepository implements RecommendationRepositor
     const ids = (rows as RestaurantRow[]).map(({ id }) => id);
     const { data: evidence, error: evidenceError } = ids.length ? await this.client.from("recommendation_evidence").select("restaurant_id,source_url,published_at,source_profile").in("restaurant_id", ids) : { data: [], error: null };
     if (evidenceError) throw evidenceError;
+    const grouped = new Map<string, { sources: Set<string>; latest: string; urls: string[] }>();
+    for (const item of evidence as EvidenceRow[]) {
+      const group = grouped.get(item.restaurant_id) ?? { sources: new Set<string>(), latest: "", urls: [] };
+      group.sources.add(item.source_profile ?? item.source_url);
+      group.latest = item.published_at > group.latest ? item.published_at : group.latest;
+      group.urls.push(item.source_url);
+      grouped.set(item.restaurant_id, group);
+    }
     return (rows as RestaurantRow[]).map((row) => {
-      const matches = (evidence as EvidenceRow[]).filter((item) => item.restaurant_id === row.id);
-      return { id: row.id, name: row.name, area: row.area, cuisines: row.cuisines, distanceKm: distanceKm(query, row), independentMentions: new Set(matches.map((item) => item.source_profile ?? item.source_url)).size, latestEvidenceAt: matches.map((item) => item.published_at).sort().at(-1) ?? new Date(0).toISOString(), sourceUrls: matches.map((item) => item.source_url) };
+      const group = grouped.get(row.id);
+      return { id: row.id, name: row.name, area: row.area, cuisines: row.cuisines, distanceKm: distanceKm(query, row), independentMentions: group?.sources.size ?? 0, latestEvidenceAt: group?.latest || new Date(0).toISOString(), sourceUrls: group?.urls ?? [] };
     });
   }
 
