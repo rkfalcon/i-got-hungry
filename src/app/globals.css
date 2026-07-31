@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --ink: #211b17;
+  --cream: #f8f0e3;
+  --tomato: #d94f35;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--cream);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+main { min-height: 100vh; display: grid; place-items: center; padding: 2rem; }
+section { width: min(46rem, 100%); display: grid; gap: 1rem; }
+h1 { max-width: 12ch; margin: 0; font-size: clamp(2.75rem, 8vw, 6rem); line-height: .92; letter-spacing: -.06em; }
+p { max-width: 38rem; font-size: 1.1rem; }
+button, input { min-height: 3rem; border-radius: .75rem; font: inherit; }
+button { width: fit-content; border: 0; padding: 0 1.25rem; color: white; background: var(--tomato); font-weight: 700; cursor: pointer; }
+input { border: 1px solid #c8b9a7; padding: 0 .9rem; background: #fffaf3; }
