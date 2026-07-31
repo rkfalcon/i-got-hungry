@@ -19,7 +19,7 @@ body {
 
 main { min-height: 100vh; }
 .search-experience { width: min(72rem, 100%); margin: 0 auto; padding: clamp(1.25rem, 4vw, 4rem); }
-.hero { min-height: 70vh; display: grid; align-content: center; gap: 1rem; }
+.hero { display: grid; align-content: start; gap: .75rem; padding: .75rem 0 1.5rem; }
 .brand, .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .76rem; font-weight: 800; }
 h1 { max-width: 12ch; margin: 0; font-size: clamp(2.75rem, 8vw, 6rem); line-height: .92; letter-spacing: -.06em; }
 p { max-width: 38rem; font-size: 1.1rem; }
@@ -43,4 +43,8 @@ fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: .75rem; }
 .restaurant-card a { color: #9f2f1e; font-weight: 800; }
 .auth-panel { margin-top: 1rem; padding: 1.25rem; border: 1px solid #c8b9a7; border-radius: 1rem; background: white; }
 .auth-panel form { display: grid; gap: .5rem; margin-top: 1rem; }
-@media (min-width: 760px) { .results { grid-template-columns: repeat(2, 1fr); } .results > div { grid-column: 1 / -1; } }
+@media (min-width: 760px) {
+  .hero { min-height: 70vh; align-content: center; gap: 1rem; padding: 0; }
+  .results { grid-template-columns: repeat(2, 1fr); }
+  .results > div { grid-column: 1 / -1; }
+}
