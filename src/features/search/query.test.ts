@@ -18,4 +18,11 @@ describe("normalizeSearchQuery", () => {
       cuisines: [],
     });
   });
+
+  it("rejects partial or out-of-range coordinates", () => {
+    expect(() => normalizeSearchQuery({ latitude: 40.7, cuisines: [] })).toThrow(SearchValidationError);
+    expect(() => normalizeSearchQuery({ latitude: Number.NaN, longitude: -74, cuisines: [] })).toThrow(SearchValidationError);
+    expect(() => normalizeSearchQuery({ latitude: 91, longitude: -74, cuisines: [] })).toThrow(SearchValidationError);
+    expect(() => normalizeSearchQuery({ latitude: 40.7, longitude: -181, cuisines: [] })).toThrow(SearchValidationError);
+  });
 });

@@ -20,13 +20,14 @@ body {
 main { min-height: 100vh; }
 .search-experience { width: min(72rem, 100%); margin: 0 auto; padding: clamp(1.25rem, 4vw, 4rem); }
 .hero { display: grid; align-content: start; gap: .75rem; padding: .75rem 0 1.5rem; }
+.hero p { margin: 0; }
 .brand, .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: .76rem; font-weight: 800; }
 h1 { max-width: 12ch; margin: 0; font-size: clamp(2.75rem, 8vw, 6rem); line-height: .92; letter-spacing: -.06em; }
 p { max-width: 38rem; font-size: 1.1rem; }
 button, input { min-height: 3rem; border-radius: .75rem; font: inherit; }
 button { width: fit-content; border: 0; padding: 0 1.25rem; color: white; background: var(--tomato); font-weight: 700; cursor: pointer; }
 input { border: 1px solid #c8b9a7; padding: 0 .9rem; background: #fffaf3; }
-.search-form { padding: clamp(1.25rem, 4vw, 3rem); border-radius: 1.5rem; background: #fffaf3; display: grid; gap: 1.5rem; box-shadow: 0 1rem 3rem #6e3f2414; }
+.search-form { padding: clamp(1rem, 4vw, 3rem); border-radius: 1.5rem; background: #fffaf3; display: grid; gap: 1rem; box-shadow: 0 1rem 3rem #6e3f2414; }
 .search-form > div { display: grid; gap: .5rem; }
 label, legend { font-weight: 800; }
 legend span { font-weight: 400; color: #76685e; }
@@ -34,6 +35,13 @@ fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: .75rem; }
 .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
 .chip { min-height: 2.5rem; color: var(--ink); background: transparent; border: 1px solid #c8b9a7; }
 .chip.selected { color: white; background: var(--ink); }
+.search-form details { color: #574a41; }
+.search-form summary { width: fit-content; cursor: pointer; font-weight: 700; }
+.custom-cuisine, .location-fallback, .location-fallback > div { display: grid; gap: .5rem; }
+.custom-cuisine { margin-top: .75rem; }
+.location-fallback { padding-top: 1rem; border-top: 1px solid #dfd1c0; }
+.secondary { color: var(--ink); background: #eadfce; }
+.ranking-note { margin: 0; color: #76685e; font-size: .85rem; line-height: 1.35; }
 .results { padding: 4rem 0; display: grid; gap: 1rem; }
 .results > div { margin-bottom: 1rem; }
 .results h2 { margin: 0; font-size: clamp(2rem, 5vw, 3.5rem); }
@@ -45,6 +53,7 @@ fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: .75rem; }
 .auth-panel form { display: grid; gap: .5rem; margin-top: 1rem; }
 @media (min-width: 760px) {
   .hero { min-height: 70vh; align-content: center; gap: 1rem; padding: 0; }
+  .search-form { gap: 1.5rem; }
   .results { grid-template-columns: repeat(2, 1fr); }
   .results > div { grid-column: 1 / -1; }
 }
